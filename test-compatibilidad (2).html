@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>¿Con quién conectas? — Test de compatibilidad</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:ital,wght@0,300;0,400;1,300&display=swap');
+
+  :root {
+    --bg: #0a0a0f;
+    --card: #12121a;
+    --accent1: #ff3cac;
+    --accent2: #784ba0;
+    --accent3: #2b86c5;
+    --text: #f0f0f0;
+    --muted: #888;
+    --border: rgba(255,255,255,0.07);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(ellipse at 20% 20%, rgba(255,60,172,0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(43,134,197,0.08) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* HEADER */
+  .header {
+    text-align: center;
+    padding: 2rem 0 2.5rem;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .badge {
+    display: inline-block;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent1);
+    border: 1px solid rgba(255,60,172,0.3);
+    padding: 0.3rem 0.8rem;
+    border-radius: 100px;
+    margin-bottom: 1.2rem;
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2rem, 8vw, 3rem);
+    font-weight: 800;
+    line-height: 1.1;
+    background: linear-gradient(135deg, #fff 0%, var(--accent1) 60%, var(--accent3) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.8rem;
+  }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 0.95rem;
+    font-weight: 300;
+    line-height: 1.6;
+  }
+
+  /* PROGRESS */
+  .progress-wrap {
+    margin-bottom: 2rem;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+
+  .progress-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+  }
+
+  .progress-bar {
+    height: 3px;
+    background: var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent1), var(--accent3));
+    border-radius: 10px;
+    transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  /* QUESTION CARD */
+  .question-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .q-number {
+    font-size: 0.75rem;
+    color: var(--accent1);
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.8rem;
+  }
+
+  .q-text {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    line-height: 1.4;
+    margin-bottom: 1.5rem;
+  }
+
+  /* OPTIONS */
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .option-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem 1.2rem;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+
+  .option-btn:hover {
+    border-color: rgba(255,60,172,0.4);
+    background: rgba(255,60,172,0.05);
+    transform: translateX(4px);
+  }
+
+  .option-btn.selected {
+    border-color: var(--accent1);
+    background: rgba(255,60,172,0.1);
+  }
+
+  .option-letter {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+  }
+
+  .option-btn.selected .option-letter {
+    background: var(--accent1);
+    color: #fff;
+  }
+
+  /* NAV BUTTONS */
+  .nav-btns {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .btn {
+    flex: 1;
+    padding: 1rem;
+    border-radius: 12px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+  }
+
+  .btn-secondary {
+    background: var(--border);
+    color: var(--muted);
+  }
+
+  .btn-secondary:hover { background: rgba(255,255,255,0.1); color: var(--text); }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent1), var(--accent2));
+    color: #fff;
+  }
+
+  .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+  .btn-primary:disabled { opacity: 0.3; cursor: not-allowed; transform: none; }
+
+  .btn-full {
+    width: 100%;
+    padding: 1.1rem;
+    border-radius: 12px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    border: none;
+    background: linear-gradient(135deg, var(--accent1), var(--accent2));
+    color: #fff;
+    transition: all 0.2s ease;
+    margin-top: 1.5rem;
+  }
+  .btn-full:hover { opacity: 0.9; transform: translateY(-1px); }
+
+  /* LOADING */
+  .loading-screen {
+    text-align: center;
+    padding: 3rem 1rem;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .loading-orb {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent1), var(--accent3));
+    margin: 0 auto 2rem;
+    animation: pulse 1.5s ease-in-out infinite;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+  }
+
+  .loading-text {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  .loading-sub {
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+
+  /* RESULT */
+  .result-screen {
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .result-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .result-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent1), var(--accent3));
+  }
+
+  .result-emoji {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  .result-type {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--accent1), var(--accent3));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 1rem;
+  }
+
+  .result-text {
+    color: #ccc;
+    font-size: 0.95rem;
+    line-height: 1.7;
+  }
+
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--accent1);
+    margin-bottom: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+
+  .tag {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    padding: 0.3rem 0.8rem;
+    border-radius: 100px;
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+
+  .share-hint {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.8rem;
+    margin-top: 1rem;
+    font-style: italic;
+  }
+
+  /* SCREEN TOGGLE */
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* INTRO */
+  .intro-screen {
+    text-align: center;
+    padding-top: 1rem;
+  }
+
+  .intro-visual {
+    display: flex;
+    justify-content: center;
+    gap: -1rem;
+    margin: 2rem 0;
+    font-size: 3rem;
+  }
+
+  .intro-desc {
+    color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: 2rem;
+    font-size: 0.95rem;
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,60,172,0.4); }
+    50% { transform: scale(1.05); box-shadow: 0 0 0 20px rgba(255,60,172,0); }
+  }
+
+  .fade-in { animation: fadeUp 0.4s ease both; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <div class="badge">✦ Efecto Magia</div>
+    <h1>¿Con quién conectas de verdad?</h1>
+    <p class="subtitle">10 preguntas. La IA analiza tu personalidad y te dice qué tipo de personas son tu tribu.</p>
+  </div>
+
+  <!-- INTRO -->
+  <div id="introScreen" class="screen active intro-screen">
+    <div class="intro-visual">🧠💫🔮</div>
+    <p class="intro-desc">No es un horóscopo. No es un test de Instagram de hace 10 años.<br><br>Es la IA analizando cómo eres de verdad para encontrar tu grupo perfecto.</p>
+    <button class="btn-full" onclick="startTest()">Empezar el test →</button>
+    <p class="share-hint">Creado con IA por @efectomagia.marta</p>
+  </div>
+
+  <!-- QUIZ -->
+  <div id="quizScreen" class="screen">
+    <div class="progress-wrap">
+      <div class="progress-info">
+        <span id="progressLabel">Pregunta 1 de 10</span>
+        <span id="progressPct">0%</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width:0%"></div>
+      </div>
+    </div>
+
+    <div class="question-card" id="questionCard">
+      <div class="q-number" id="qNumber">01 / 10</div>
+      <div class="q-text" id="qText"></div>
+      <div class="options" id="optionsContainer"></div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-secondary" id="backBtn" onclick="prevQuestion()" style="display:none">← Atrás</button>
+      <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()" disabled>Siguiente →</button>
+    </div>
+  </div>
+
+  <!-- LOADING -->
+  <div id="loadingScreen" class="screen">
+    <div class="loading-screen">
+      <div class="loading-orb">🔮</div>
+      <div class="loading-text" id="loadingText">Analizando tu personalidad...</div>
+      <div class="loading-sub">La IA está procesando tus respuestas</div>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div id="resultScreen" class="screen result-screen">
+    <div class="result-card" id="resultCard">
+      <span class="result-emoji" id="resultEmoji"></span>
+      <div class="result-type" id="resultType"></div>
+      <div class="result-text" id="resultText"></div>
+      <div class="section-title">Tu tribu ideal</div>
+      <div class="tags" id="resultTags"></div>
+      <div class="section-title">Lo que buscas en los demás</div>
+      <div class="result-text" id="resultNeeds"></div>
+      <div class="section-title">Tu mayor virtud en un grupo</div>
+      <div class="result-text" id="resultStrength"></div>
+    </div>
+    <button class="btn-full" onclick="resetTest()">🔄 Repetir test</button>
+    <p class="share-hint">Comparte tu resultado 👆 ¿Coincide con tus amigos?<br>@efectomagia.marta</p>
+  </div>
+</div>
+
+<script>
+const questions = [
+  {
+    text: "Cuando tienes un problema, lo primero que haces es…",
+    options: ["Hablarlo con alguien de confianza", "Buscar información y analizarlo solo/a", "Distraerme con algo hasta que se me ocurra algo", "Actuar directamente sin pensar demasiado"]
+  },
+  {
+    text: "En un grupo de amigos nuevos, tú eres…",
+    options: ["El/la que rompe el hielo y anima a todos", "El/la que observa primero antes de hablar", "El/la que hace reír a todo el mundo", "El/la que organiza los planes"]
+  },
+  {
+    text: "¿Qué te molesta más de la gente?",
+    options: ["La falsedad y el postureo", "La falta de ambición o esfuerzo", "El drama y la negatividad constante", "Que no respeten tu espacio y tiempo"]
+  },
+  {
+    text: "Tu fin de semana ideal es…",
+    options: ["Quedada con amigos, cuantos más mejor", "Plan tranquilo con una o dos personas de confianza", "Algo nuevo que no hayas hecho nunca", "En casa, recargar energía y hacer tus cosas"]
+  },
+  {
+    text: "Cuando discutes con alguien importante para ti…",
+    options: ["Lo hablas en el momento, necesitas resolverlo ya", "Te lo guardas hasta que puedes calmarte", "Lo tratas con humor para bajar la tensión", "Te alejas un tiempo hasta que se enfría"]
+  },
+  {
+    text: "¿Cómo son tus amistades normalmente?",
+    options: ["Muchos conocidos y un grupo grande", "Pocos pero muy cercanos e íntimos", "Van cambiando según la etapa de vida", "Prefiero la familia o estar solo/a"]
+  },
+  {
+    text: "Lo que más valoras en un amigo o amiga es…",
+    options: ["La lealtad, que esté en los malos momentos", "La honestidad, aunque duela", "La diversión y buena energía", "La independencia, que no agobia"]
+  },
+  {
+    text: "Si pudieras pasar un día haciendo lo que quieras…",
+    options: ["Viaje o aventura con amigos", "Crear algo: música, arte, contenido", "Jugar, ver series, desconectar total", "Aprender algo nuevo o explorar"]
+  },
+  {
+    text: "Cuando conoces a alguien, confías…",
+    options: ["Rápido, me fío del instinto", "Poco a poco, necesito conocerle bien", "Depende de lo que me cuenten de esa persona", "Casi nunca del todo, soy muy reservado/a"]
+  },
+  {
+    text: "¿Cómo describirías tu energía social?",
+    options: ["Me recargo estando con gente, cuanta más mejor", "Me recargo en soledad y salgo cuando quiero", "Depende del día y del humor que tenga", "Selectivo/a: poca gente pero mucha calidad"]
+  }
+];
+
+let currentQ = 0;
+let answers = [];
+let selectedOption = null;
+
+function startTest() {
+  showScreen('quizScreen');
+  renderQuestion();
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function renderQuestion() {
+  const q = questions[currentQ];
+  const letters = ['A', 'B', 'C', 'D'];
+
+  document.getElementById('qNumber').textContent = `0${currentQ + 1} / 10`;
+  document.getElementById('qText').textContent = q.text;
+  document.getElementById('progressLabel').textContent = `Pregunta ${currentQ + 1} de 10`;
+  const pct = Math.round((currentQ / 10) * 100);
+  document.getElementById('progressPct').textContent = pct + '%';
+  document.getElementById('progressFill').style.width = pct + '%';
+
+  const container = document.getElementById('optionsContainer');
+  container.innerHTML = '';
+
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn' + (answers[currentQ] === i ? ' selected' : '');
+    btn.innerHTML = `<span class="option-letter">${letters[i]}</span>${opt}`;
+    btn.onclick = () => selectOption(i);
+    container.appendChild(btn);
+  });
+
+  selectedOption = answers[currentQ] !== undefined ? answers[currentQ] : null;
+  document.getElementById('nextBtn').disabled = selectedOption === null;
+  document.getElementById('backBtn').style.display = currentQ > 0 ? 'block' : 'none';
+
+  const card = document.getElementById('questionCard');
+  card.classList.remove('fade-in');
+  void card.offsetWidth;
+  card.classList.add('fade-in');
+}
+
+function selectOption(i) {
+  selectedOption = i;
+  answers[currentQ] = i;
+  document.querySelectorAll('.option-btn').forEach((btn, idx) => {
+    btn.classList.toggle('selected', idx === i);
+  });
+  document.getElementById('nextBtn').disabled = false;
+}
+
+function nextQuestion() {
+  if (selectedOption === null) return;
+  if (currentQ < questions.length - 1) {
+    currentQ++;
+    renderQuestion();
+  } else {
+    showLoading();
+  }
+}
+
+function prevQuestion() {
+  if (currentQ > 0) {
+    currentQ--;
+    renderQuestion();
+  }
+}
+
+const loadingMessages = [
+  "Analizando tu personalidad...",
+  "Detectando tu energía social...",
+  "Buscando tu tribu ideal...",
+  "Calculando tu perfil de conexión...",
+  "Casi listo..."
+];
+
+function showLoading() {
+  showScreen('loadingScreen');
+  let i = 0;
+  const interval = setInterval(() => {
+    i++;
+    if (i < loadingMessages.length) {
+      document.getElementById('loadingText').textContent = loadingMessages[i];
+    }
+  }, 800);
+  setTimeout(() => {
+    clearInterval(interval);
+    getAIResult();
+  }, 4000);
+}
+
+async function getAIResult() {
+  const answersText = answers.map((a, i) => 
+    `P${i+1}: "${questions[i].text}" → "${questions[i].options[a]}"`
+  ).join('\n');
+
+  const prompt = `Eres un psicólogo especialista en dinámicas sociales juveniles. Analiza estas respuestas de un adolescente y devuelve SOLO un JSON válido sin markdown ni backticks:
+
+${answersText}
+
+Responde EXACTAMENTE con este JSON:
+{
+  "emoji": "(un emoji que represente su personalidad)",
+  "tipo": "(nombre creativo de su tipo de personalidad, máximo 4 palabras)",
+  "descripcion": "(2-3 frases describiendo su forma de ser en grupos y relaciones, tono cercano y positivo)",
+  "tribu": ["(tipo de persona 1)", "(tipo de persona 2)", "(tipo de persona 3)"],
+  "necesita": "(1-2 frases sobre qué busca en sus amistades)",
+  "virtud": "(1 frase sobre su mayor aportación a un grupo de amigos)"
+}`;
+
+  try {
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1000,
+        messages: [{ role: "user", content: prompt }]
+      })
+    });
+
+    const data = await response.json();
+    const text = data.content.map(i => i.text || "").join("").trim();
+    const clean = text.replace(/```json|```/g, "").trim();
+    const result = JSON.parse(clean);
+    showResult(result);
+  } catch (err) {
+    // Fallback result
+    showResult({
+      emoji: "⚡",
+      tipo: "Alma Libre e Intensa",
+      descripcion: "Eres alguien que valora mucho las conexiones auténticas. No te interesan las relaciones superficiales — prefieres pocas personas pero de verdad. Tienes una energía única que atrae a quienes buscan algo real.",
+      tribu: ["Personas creativas y curiosas", "Gente directa y sin filtros", "Almas independientes como tú"],
+      necesita: "Buscas personas que te entiendan sin que tengas que explicarte demasiado. La lealtad y la honestidad son innegociables para ti.",
+      virtud: "Tu mayor aportación es la autenticidad — con tus amigos siempre saben que lo que ven es lo que hay."
+    });
+  }
+}
+
+function showResult(result) {
+  document.getElementById('resultEmoji').textContent = result.emoji;
+  document.getElementById('resultType').textContent = result.tipo;
+  document.getElementById('resultText').textContent = result.descripcion;
+  document.getElementById('resultNeeds').textContent = result.necesita;
+  document.getElementById('resultStrength').textContent = result.virtud;
+
+  const tagsContainer = document.getElementById('resultTags');
+  tagsContainer.innerHTML = result.tribu.map(t => `<span class="tag">${t}</span>`).join('');
+
+  showScreen('resultScreen');
+}
+
+function resetTest() {
+  currentQ = 0;
+  answers = [];
+  selectedOption = null;
+  showScreen('introScreen');
+}
+</script>
+</body>
+</html>
